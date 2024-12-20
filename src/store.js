@@ -1,11 +1,16 @@
-import { createStore } from "redux";
-const initialState = {
+import { combineReducers, createStore } from "redux";
+const initialStateAccount = {
   balance: 0,
   loan: 0,
   loanPurpose: "",
 };
+const initialStateCustomer = {
+  fullName: "",
+  nationalId: "",
+  createdAt: "",
+};
 
-function reducer(state = initialState, action) {
+function accountReducer(state = initialStateAccount, action) {
   switch (action.type) {
     // stateDomain/EventName
     case "account/deposit":
@@ -31,20 +36,29 @@ function reducer(state = initialState, action) {
       return state;
   }
 }
+function customerReducer(state = initialStateCustomer, action) {
+  switch (action.type) {
+    case "customer/createCustomer":
+      return {
+        ...state,
+        fullName: action.payload.fullName,
+        nationalID: action.payload.nationalID,
+        createdAt: action.payLoad.createdAt,
+      };
+    case "customer/updateName":
+      return { ...state, fullName: action.payLoad };
+    default:
+      return state;
+  }
+}
 
-const store = createStore(reducer);
+const rootReducer = combineReducers({
+  account: accountReducer,
+  customer: customerReducer,
+});
 
-// store.dispatch(500);
-// console.log(store.getState());
-// store.dispatch({ type: "account/withdraw", payload: 200 });
-// console.log(store.getState());
-// store.dispatch({
-//   type: "account/requestLoan",
-//   payload: { amount: 1000, purpose: "Buy a Car" },
-// });
-// console.log(store.getState());
-// store.dispatch({ type: "account/payLoan" });
-
+const store = createStore(rootReducer);
+// Account Action Creators
 function deposit(amount) {
   return { type: "account/deposit", payload: amount };
 }
@@ -72,3 +86,16 @@ store.dispatch(requestLoan(1000, "Buy a Car"));
 console.log(store.getState());
 store.dispatch(payLoan());
 console.log(store.getState());
+
+// Customer Action Creators
+function createCustomer(fullName, nationalID) {
+  return {
+    type: "customer/createCustomer",
+    payload: { fullName, nationalID, createdAt: new Date().toISOString() },
+  };
+}
+function updateName(fullName) {
+  return { type: "account/updateName", payload: fullName };
+}
+
+store.dispatch(createCustomer("Mikiyas Teowodroes", "895489309458"));
