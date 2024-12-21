@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { deposit, payLoan, requestLoan, withdraw } from "./accountSlice";
 
 function AccountOperations() {
   const [depositAmount, setDepositAmount] = useState("");
@@ -6,14 +8,46 @@ function AccountOperations() {
   const [loanAmount, setLoanAmount] = useState("");
   const [loanPurpose, setLoanPurpose] = useState("");
   const [currency, setCurrency] = useState("USD");
+  const dispatch = useDispatch();
+  const account = useSelector((store) => store.account);
+  const { balance, loan, currency: curr } = account;
+  const formatCurrency = useCallback(
+    function formatCurrency(value) {
+      return new Intl.NumberFormat("en", {
+        style: "currency",
+        currency: curr,
+      }).format(value);
+    },
+    [curr]
+  );
 
-  function handleDeposit() {}
+  function handleDeposit() {
+    if (!depositAmount) return;
+    dispatch(deposit(Number(depositAmount), currency));
+    setDepositAmount("");
+  }
 
-  function handleWithdrawal() {}
+  function handleWithdrawal() {
+    if (
+      !withdrawalAmount ||
+      Number(withdrawalAmount) <= 0 ||
+      Number(withdrawalAmount) > balance
+    )
+      return;
+    dispatch(withdraw(withdrawalAmount));
+    setWithdrawalAmount("");
+  }
 
-  function handleRequestLoan() {}
+  function handleRequestLoan() {
+    if (!loanAmount || loanAmount < 0 || !loanPurpose) return;
+    dispatch(requestLoan(loanAmount, loanPurpose));
+    setLoanAmount("");
+  }
 
-  function handlePayLoan() {}
+  function handlePayLoan() {
+    if (!balance || !loan || balance < loan) return;
+    dispatch(payLoan());
+  }
 
   return (
     <div>
@@ -66,10 +100,12 @@ function AccountOperations() {
           <button onClick={handleRequestLoan}>Request loan</button>
         </div>
 
-        <div>
-          <span>Pay back $X</span>
-          <button onClick={handlePayLoan}>Pay loan</button>
-        </div>
+        {loan > 0 && (
+          <div>
+            <span>Pay back {formatCurrency(loan)}</span>
+            <button onClick={handlePayLoan}>Pay loan</button>
+          </div>
+        )}
       </div>
     </div>
   );
