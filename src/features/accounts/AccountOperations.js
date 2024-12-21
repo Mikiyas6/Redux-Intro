@@ -10,21 +10,22 @@ function AccountOperations() {
   const [currency, setCurrency] = useState("USD");
   const dispatch = useDispatch();
   const account = useSelector((store) => store.account);
-  const { balance, loan, currency: curr } = account;
+  const { balance, loan, isLoading } = account;
   const formatCurrency = useCallback(
     function formatCurrency(value) {
       return new Intl.NumberFormat("en", {
         style: "currency",
-        currency: curr,
+        currency,
       }).format(value);
     },
-    [curr]
+    [currency]
   );
 
   function handleDeposit() {
     if (!depositAmount) return;
-    dispatch(deposit(Number(depositAmount), currency));
+    dispatch(deposit(depositAmount, currency));
     setDepositAmount("");
+    setCurrency("");
   }
 
   function handleWithdrawal() {
@@ -69,7 +70,9 @@ function AccountOperations() {
             <option value="GBP">British Pound</option>
           </select>
 
-          <button onClick={handleDeposit}>Deposit {depositAmount}</button>
+          <button onClick={handleDeposit} disabled={isLoading}>
+            {isLoading ? "Converting" : ` Deposit ${depositAmount}`}
+          </button>
         </div>
 
         <div>
