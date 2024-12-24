@@ -43,6 +43,7 @@ function AccountOperations() {
     if (!loanAmount || loanAmount < 0 || !loanPurpose) return;
     dispatch(requestLoan(loanAmount, loanPurpose));
     setLoanAmount("");
+    setLoanPurpose("");
   }
 
   function handlePayLoan() {
