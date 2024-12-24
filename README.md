@@ -11,7 +11,7 @@ The **Redux Bank Application** is a modern banking interface that allows users t
 ## 🔗 Links
 
 - Github Repo: [Github-link](https://github.com/Mikiyas6/The-Redux-Bank)
-- Live Site URL: [Page-link](https://mikiyas6.github.io/The-Redux-Bank/)
+- Live Site URL: [Page-link](https://the-redux-bank-app.netlify.app/)
 
 ---
 
